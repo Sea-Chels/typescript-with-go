@@ -8,7 +8,7 @@ import type { Student } from '../api/types';
 
 export function Students() {
   const { logout } = useAuth();
-  const { data, isLoading, error, refetch, createStudent } = useStudents();
+  const { data, isLoading, error, refetch, createStudent } = useStudents({ includeDeleted: true });
 
   // Define table columns
   const columns = useMemo<ColumnDef<Student>[]>(

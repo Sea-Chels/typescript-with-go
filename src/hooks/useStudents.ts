@@ -3,16 +3,28 @@ import { useApi } from './useApi';
 import type { StudentsResponse, CreateStudentRequest, Student } from '../api/types';
 import { API_ENDPOINTS } from '../utils/constants';
 
-export function useStudents() {
+interface UseStudentsOptions {
+  includeDeleted?: boolean;
+}
+
+export function useStudents(options: UseStudentsOptions = {}) {
   const { server } = useApi();
   const queryClient = useQueryClient();
+  const { includeDeleted = false } = options;
 
   // Fetch students
   const studentsQuery = useQuery({
-    queryKey: ['students'],
+    queryKey: ['students', { includeDeleted }],
     queryFn: async () => {
-      const response = await server.get<StudentsResponse>(API_ENDPOINTS.STUDENTS.LIST);
+      const endpoint = includeDeleted 
+        ? `${API_ENDPOINTS.STUDENTS.LIST}?include_deleted=true`
+        : API_ENDPOINTS.STUDENTS.LIST;
+      
+      console.log('Fetching students with endpoint:', endpoint, 'includeDeleted:', includeDeleted);
+      
+      const response = await server.get<StudentsResponse>(endpoint);
       if (response.success && response.data) {
+        console.log('Students response:', response.data);
         return response.data;
       }
       throw new Error(response.error?.message || 'Failed to fetch students');
@@ -29,7 +41,7 @@ export function useStudents() {
       throw new Error(response.error?.message || 'Failed to create student');
     },
     onSuccess: () => {
-      // Invalidate and refetch students list
+      // Invalidate and refetch all students queries
       queryClient.invalidateQueries({ queryKey: ['students'] });
     },
   });
