@@ -1,69 +1,98 @@
-# React + TypeScript + Vite
+# Student Management Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern React application for managing student records with a dark, neon-themed UI.
 
-Currently, two official plugins are available:
+## Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **React 19** with TypeScript
+- **Vite** for fast development and building
+- **TailwindCSS** for styling with custom dark theme
+- **React Query** for server state management
+- **React Hook Form** with Zod validation
+- **React Router** for navigation
+- **Axios** for API communication
 
-## Expanding the ESLint configuration
+## Getting Started
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Prerequisites
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- Node.js 18+
+- npm or yarn
+- Backend API running on `http://localhost:8080`
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+### Installation
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Development
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run dev
 ```
+
+Runs the app at [http://localhost:5173](http://localhost:5173)
+
+### Build
+
+```bash
+npm run build
+```
+
+Creates optimized production build in `dist/`
+
+### Preview Production Build
+
+```bash
+npm run preview
+```
+
+## Project Structure
+
+```
+src/
+├── api/          # API client and configuration
+├── components/   # Reusable UI components
+│   ├── layout/   # Layout components (ProtectedRoute)
+│   └── ui/       # UI primitives (Button, Form, Input, etc.)
+├── contexts/     # React contexts (AuthContext)
+├── hooks/        # Custom React hooks
+├── pages/        # Page components (Login, Students)
+├── types/        # TypeScript type definitions
+└── utils/        # Utility functions and constants
+```
+
+## Features
+
+- **Authentication**: JWT-based login with protected routes
+- **Student Management**: CRUD operations for student records
+- **Dark Theme**: Custom neon-themed dark UI with animations
+- **Form Validation**: Schema-based validation with Zod
+- **Loading States**: Skeleton loaders and loading spinners
+- **Error Handling**: Graceful error boundaries and API error handling
+
+## Environment Variables
+
+The app expects the backend API at `http://localhost:8080`. To change this, update `src/api/config.ts`.
+
+## Available Scripts
+
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run lint` - Run ESLint
+- `npm run preview` - Preview production build
+
+## API Integration
+
+The frontend communicates with a Go backend API. Key endpoints:
+
+- `POST /auth/login` - User authentication
+- `GET /students` - List all students
+- `POST /students` - Create new student
+- `PUT /students/:id` - Update student
+- `DELETE /students/:id` - Delete student
+
+## License
+
+MIT
