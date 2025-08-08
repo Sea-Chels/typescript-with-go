@@ -48,9 +48,14 @@ export function AddStudent({ createStudent }: AddStudentProps) {
   return (
     <>
       <Button
-        variant="success"
+        variant="neon"
         onClick={() => setIsModalOpen(true)}
-        leftIcon={<span>+</span>}
+        leftIcon={
+          <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+          </svg>
+        }
+        glow
       >
         Add Student
       </Button>
@@ -83,12 +88,13 @@ export function AddStudent({ createStudent }: AddStudentProps) {
           </>
         }
       >
-        <Form id="add-student-form" onSubmit={handleSubmit(onSubmit)}>
+        <Form id="add-student-form" onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           <Input
             {...register('name')}
             label="Student Name"
             placeholder="Enter student name"
             error={errors.name}
+            variant="glass"
           />
 
           <Input
@@ -99,6 +105,7 @@ export function AddStudent({ createStudent }: AddStudentProps) {
             min="1"
             max="12"
             error={errors.grade}
+            variant="glass"
           />
 
           {createStudent.isError && (
