@@ -1,9 +1,10 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import type { ColumnDef } from '@tanstack/react-table';
 import { useApi } from '../hooks/useApi';
 import { useAuth } from '../hooks/useAuth';
 import { Table } from '../components/ui/Table';
+import { AddStudent } from '../components/AddStudent';
 import type { Student, StudentsResponse } from '../api/types';
 import { API_ENDPOINTS } from '../utils/constants';
 
@@ -101,15 +102,22 @@ export function Students() {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0">
+          {/* Add Student Button */}
+          <div className="mb-4 flex justify-end">
+            <AddStudent />
+          </div>
+
           <div className="bg-white rounded-lg shadow">
             <div className="px-4 py-5 sm:p-6">
               <Table
                 data={data?.students || []}
                 columns={columns}
-                pageSize={10}
+                pageSize={3}
                 isLoading={isLoading}
                 error={error?.message || null}
                 onRetry={() => refetch()}
+                enableSearch={true}
+                searchPlaceholder="Search students by name, grade..."
               />
             </div>
           </div>

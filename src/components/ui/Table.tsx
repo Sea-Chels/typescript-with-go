@@ -1,9 +1,10 @@
-import React from 'react';
+import {useState} from 'react';
 import {
   flexRender,
   getCoreRowModel,
   getPaginationRowModel,
   getSortedRowModel,
+  getFilteredRowModel,
   useReactTable,
 } from '@tanstack/react-table';
 import type { ColumnDef, SortingState } from '@tanstack/react-table';
@@ -16,28 +17,37 @@ interface TableProps<T> {
   isLoading?: boolean;
   error?: string | null;
   onRetry?: () => void;
+  enableSearch?: boolean;
+  searchPlaceholder?: string;
 }
 
 export function Table<T>({
   data,
   columns,
-  pageSize = 10,
+  pageSize = 3,
   isLoading = false,
   error = null,
   onRetry,
+  enableSearch = true,
+  searchPlaceholder = "Search...",
 }: TableProps<T>) {
-  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [globalFilter, setGlobalFilter] = useState('');
 
   const table = useReactTable({
     data,
     columns,
     state: {
       sorting,
+      globalFilter,
     },
     onSortingChange: setSorting,
+    onGlobalFilterChange: setGlobalFilter,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    globalFilterFn: 'includesString',
     initialState: {
       pagination: {
         pageSize,
@@ -71,6 +81,24 @@ export function Table<T>({
 
   return (
     <div className="w-full">
+      {/* Search Bar */}
+      {enableSearch && (
+        <div className="mb-4">
+          <input
+            type="text"
+            value={globalFilter ?? ''}
+            onChange={(e) => setGlobalFilter(e.target.value)}
+            placeholder={searchPlaceholder}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
+          />
+          {globalFilter && (
+            <p className="text-sm text-gray-600 mt-1">
+              Found {table.getFilteredRowModel().rows.length} result(s)
+            </p>
+          )}
+        </div>
+      )}
+      
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
