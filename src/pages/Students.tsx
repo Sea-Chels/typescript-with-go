@@ -1,28 +1,14 @@
 import { useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
 import type { ColumnDef } from '@tanstack/react-table';
-import { useApi } from '../hooks/useApi';
 import { useAuth } from '../hooks/useAuth';
+import { useStudents } from '../hooks/useStudents';
 import { Table } from '../components/ui/Table';
 import { AddStudent } from '../components/AddStudent';
-import type { Student, StudentsResponse } from '../api/types';
-import { API_ENDPOINTS } from '../utils/constants';
+import type { Student } from '../api/types';
 
 export function Students() {
-  const { server } = useApi();
   const { logout } = useAuth();
-
-  // Fetch students data
-  const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ['students'],
-    queryFn: async () => {
-      const response = await server.get<StudentsResponse>(API_ENDPOINTS.STUDENTS.LIST);
-      if (response.success && response.data) {
-        return response.data;
-      }
-      throw new Error(response.error?.message || 'Failed to fetch students');
-    },
-  });
+  const { data, isLoading, error, refetch } = useStudents();
 
   // Define table columns
   const columns = useMemo<ColumnDef<Student>[]>(

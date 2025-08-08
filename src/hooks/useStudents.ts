@@ -35,6 +35,7 @@ export function useStudents() {
   });
 
   return {
+    data: studentsQuery.data,
     students: studentsQuery.data?.students || [],
     count: studentsQuery.data?.count || 0,
     isLoading: studentsQuery.isLoading,
