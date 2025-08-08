@@ -8,7 +8,7 @@ import type { Student } from '../api/types';
 
 export function Students() {
   const { logout } = useAuth();
-  const { data, isLoading, error, refetch } = useStudents();
+  const { data, isLoading, error, refetch, createStudent } = useStudents();
 
   // Define table columns
   const columns = useMemo<ColumnDef<Student>[]>(
@@ -90,7 +90,7 @@ export function Students() {
         <div className="px-4 py-6 sm:px-0">
           {/* Add Student Button */}
           <div className="mb-4 flex justify-end">
-            <AddStudent />
+            <AddStudent createStudent={createStudent} />
           </div>
 
           <div className="bg-white rounded-lg shadow">

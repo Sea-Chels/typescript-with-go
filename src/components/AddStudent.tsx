@@ -2,13 +2,11 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useApi } from '../hooks/useApi';
+import type { UseMutationResult } from '@tanstack/react-query';
 import { Button } from './ui/Button';
 import { Input } from './ui/Input';
 import { Modal } from './ui/Modal';
 import { Form, FormError } from './ui/Form';
-import { API_ENDPOINTS } from '../utils/constants';
 import type { CreateStudentRequest, Student } from '../api/types';
 
 // Validation schema
@@ -19,10 +17,12 @@ const addStudentSchema = z.object({
 
 type AddStudentFormData = z.infer<typeof addStudentSchema>;
 
-export function AddStudent() {
+interface AddStudentProps {
+  createStudent: UseMutationResult<Student, Error, CreateStudentRequest, unknown>;
+}
+
+export function AddStudent({ createStudent }: AddStudentProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { server } = useApi();
-  const queryClient = useQueryClient();
 
   const {
     register,
@@ -33,32 +33,16 @@ export function AddStudent() {
     resolver: zodResolver(addStudentSchema),
   });
 
-  // Mutation for creating a student
-  const createStudentMutation = useMutation({
-    mutationFn: async (data: CreateStudentRequest) => {
-      const response = await server.post<Student>(API_ENDPOINTS.STUDENTS.CREATE, data);
-      if (response.success && response.data) {
-        return response.data;
-      }
-      throw new Error(response.error?.message || 'Failed to create student');
-    },
-    onSuccess: () => {
-      // Invalidate and refetch students list
-      queryClient.invalidateQueries({ queryKey: ['students'] });
-      // Close modal and reset form
-      setIsModalOpen(false);
-      reset();
-    },
-  });
-
   const onSubmit = async (data: AddStudentFormData) => {
-    await createStudentMutation.mutateAsync(data);
+    await createStudent.mutateAsync(data);
+    setIsModalOpen(false);
+    reset();
   };
 
   const handleClose = () => {
     setIsModalOpen(false);
     reset();
-    createStudentMutation.reset();
+    createStudent.reset();
   };
 
   return (
@@ -81,8 +65,8 @@ export function AddStudent() {
               type="submit"
               form="add-student-form"
               variant="primary"
-              disabled={createStudentMutation.isPending}
-              isLoading={createStudentMutation.isPending}
+              disabled={createStudent.isPending}
+              isLoading={createStudent.isPending}
               loadingText="Adding..."
               className="sm:ml-3"
             >
@@ -91,7 +75,7 @@ export function AddStudent() {
             <Button
               variant="secondary"
               onClick={handleClose}
-              disabled={createStudentMutation.isPending}
+              disabled={createStudent.isPending}
               className="mt-3 sm:mt-0"
             >
               Cancel
@@ -117,8 +101,8 @@ export function AddStudent() {
             error={errors.grade}
           />
 
-          {createStudentMutation.isError && (
-            <FormError message={createStudentMutation.error?.message || 'Failed to add student'} />
+          {createStudent.isError && (
+            <FormError message={createStudent.error?.message || 'Failed to add student'} />
           )}
         </Form>
       </Modal>
