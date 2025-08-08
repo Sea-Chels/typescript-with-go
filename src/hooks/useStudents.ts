@@ -46,6 +46,21 @@ export function useStudents(options: UseStudentsOptions = {}) {
     },
   });
 
+  // Update student mutation
+  const updateStudent = useMutation({
+    mutationFn: async (student: Student) => {
+      const response = await server.put<Student>(API_ENDPOINTS.STUDENTS.LIST, student);
+      if (response.success && response.data) {
+        return response.data;
+      }
+      throw new Error(response.error?.message || 'Failed to update student');
+    },
+    onSuccess: () => {
+      // Invalidate and refetch all students queries
+      queryClient.invalidateQueries({ queryKey: ['students'] });
+    },
+  });
+
   return {
     data: studentsQuery.data,
     students: studentsQuery.data?.students || [],
@@ -54,5 +69,6 @@ export function useStudents(options: UseStudentsOptions = {}) {
     error: studentsQuery.error,
     refetch: studentsQuery.refetch,
     createStudent,
+    updateStudent,
   };
 }
