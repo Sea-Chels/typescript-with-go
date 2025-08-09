@@ -5,10 +5,11 @@ import { useStudents } from '../hooks/useStudents';
 import { Table } from '../components/ui/Table';
 import { AddStudent } from '../components/AddStudent';
 import type { Student } from '../api/types';
+import { Button } from '../components/ui/Button';
 
 export function Students() {
   const { logout } = useAuth();
-  const { data, isLoading, error, refetch, createStudent } = useStudents({ includeDeleted: true });
+  const { data, isLoading, error, refetch, createStudent, deleteStudent } = useStudents({ includeDeleted: true });
 
   // Define table columns
   const columns = useMemo<ColumnDef<Student>[]>(
@@ -61,6 +62,17 @@ export function Students() {
                 {isDeactivated ? 'True' : 'False'}
               </span>
             </div>
+          );
+        },
+      },
+      {
+        id: 'actions',
+        header: 'Actions',
+        accessorFn: (row) => row.deleted_at != null,
+        cell: ({ row }) => {
+          const isDeactivated = row.original.deleted_at != null;
+          return (
+            <Button disabled={isDeactivated} variant="danger" onClick={() => deleteStudent.mutate(row.original.id)}>Delete</Button>
           );
         },
       },

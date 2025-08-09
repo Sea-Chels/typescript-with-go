@@ -20,11 +20,8 @@ export function useStudents(options: UseStudentsOptions = {}) {
         ? `${API_ENDPOINTS.STUDENTS.LIST}?include_deleted=true`
         : API_ENDPOINTS.STUDENTS.LIST;
       
-      console.log('Fetching students with endpoint:', endpoint, 'includeDeleted:', includeDeleted);
-      
       const response = await server.get<StudentsResponse>(endpoint);
       if (response.success && response.data) {
-        console.log('Students response:', response.data);
         return response.data;
       }
       throw new Error(response.error?.message || 'Failed to fetch students');
@@ -60,6 +57,21 @@ export function useStudents(options: UseStudentsOptions = {}) {
       queryClient.invalidateQueries({ queryKey: ['students'] });
     },
   });
+    // Update student mutation
+    const deleteStudent = useMutation({
+      mutationFn: async (studentID: number) => {
+        const deleteUrl = `${API_ENDPOINTS.STUDENTS.LIST}/${studentID}`;
+        const response = await server.delete<Student>(deleteUrl);
+        if (response.success) {
+          return true;
+        }
+        throw new Error(response.error?.message || 'Failed to update student');
+      },
+      onSuccess: () => {
+        // Invalidate and refetch all students queries
+        queryClient.invalidateQueries({ queryKey: ['students'] });
+      },
+    });
 
   return {
     data: studentsQuery.data,
@@ -70,5 +82,6 @@ export function useStudents(options: UseStudentsOptions = {}) {
     refetch: studentsQuery.refetch,
     createStudent,
     updateStudent,
+    deleteStudent,
   };
 }
